@@ -1,6 +1,12 @@
-import { createApp } from 'vue'
+import {
+    createApp
+} from 'vue'
+import Antd from 'ant-design-vue';
+import 'normalize.css'
+import 'ant-design-vue/dist/antd.css';
 import App from './App.vue'
 import router from './router'
 import store from './store'
+const app = createApp(App);
 
-createApp(App).use(store).use(router).mount('#app')
+app.use(Antd).use(store).use(router).mount('#app')
