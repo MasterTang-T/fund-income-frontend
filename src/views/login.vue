@@ -1,86 +1,73 @@
 <template>
-  <div class="login-container">
-    <a-form
-      :layout="formState.layout"
-      :model="formState"
-      v-bind="formItemLayout"
-      class="login-form"
-    >
-      <a-form-item label="用户名">
-        <a-input v-model:value="formState.username" placeholder="用户名" />
-      </a-form-item>
-      <a-form-item label="密码">
-        <a-input v-model:value="formState.password" placeholder="密码" />
-      </a-form-item>
-      <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
-        <a-button type="primary" class="submitBtn" @click="handleLogin"
-          >登录/注册</a-button
-        >
-      </a-form-item>
+<div class="login-container">
+    <a-form :model="formState" class="login-form" :wrapper-col='wrapperCol' :label-col='labelCol' :size='large'>
+        <a-form-item label="用户名:">
+            <a-input v-model="formState.username" placeholder="用户名" />
+        </a-form-item>
+        <a-form-item label="密码:">
+            <a-input v-model="formState.password" placeholder="密码" visibilityToggle type="pas" />
+        </a-form-item>
+        <a-form-item :wrapper-col="{ span: 14, offset: 5 }">
+            <a-button type="primary" class="submitBtn" @click="handleLogin" :loading='btnLoading'>登录/注册</a-button>
+        </a-form-item>
     </a-form>
-  </div>
+    
+</div>
 </template>
+
 <script>
-import { computed, defineComponent, reactive } from "vue";
+import {
+    defineComponent,
+    reactive,
+    ref
+} from "vue";
 import service from "@/utils/axios/http";
 export default defineComponent({
-  setup() {
-    const formState = reactive({
-      layout: "horizontal",
-      username: "",
-      password: "",
-    });
-    const formItemLayout = computed(() => {
-      const { layout } = formState;
-      return layout === "horizontal"
-        ? {
-            labelCol: {
-              span: 4,
-            },
-            wrapperCol: {
-              span: 14,
-            },
-          }
-        : {};
-    });
-    const buttonItemLayout = computed(() => {
-      const { layout } = formState;
-      return layout === "horizontal"
-        ? {
-            wrapperCol: {
-              span: 14,
-              offset: 4,
-            },
-          }
-        : {};
-    });
-    const handleLogin = () => {
-      service
-        .post("/user/isExistByUsername", { name: formState.username })
-        .then((res) => {
-          console.log(res, "res");
+    setup() {
+        let btnLoading = ref(false)
+        const formState = reactive({
+            username: "",
+            password: "",
         });
-    };
-    return {
-      formState,
-      formItemLayout,
-      buttonItemLayout,
-      handleLogin,
-    };
-  },
+        const handleLogin = () => {
+            btnLoading.value = true;
+            service
+                .post("/user/isExistByUsername", {
+                    name: formState.username
+                })
+                .then((res) => {
+                    console.log(res, "res");
+                    btnLoading.value = false;
+                });
+        };
+        return {
+            wrapperCol: {
+                span: 19
+            },
+            labelCol: {
+                span: 5
+            },
+            formState,
+            handleLogin,
+            btnLoading
+        };
+    },
 });
 </script>
 
 <style lang="less" scoped>
 .login-container {
-  height: 100vh;
-  position: relative;
-  background: url("../assets/background.jpg") center center fixed no-repeat;
-  background-size: cover;
-  .login-form {
-    position: absolute;
-    right: 10vw;
-    top: 40vh;
-  }
+    height: 100vh;
+    position: relative;
+    background: url("../assets/background.jpg") center center fixed no-repeat;
+    background-size: cover;
+
+    .login-form {
+        position: absolute;
+        right: 10vw;
+        top: 40vh;
+        width: 16vw;
+        height: 18vh;
+    }
 }
 </style>
