@@ -1,7 +1,6 @@
 import axios from 'axios';
-import {
-    Toast
-} from 'vant'
+import { message } from 'ant-design-vue';
+
 const service = axios.create({
     timeout: 5000,
     baseURL: '/api',
@@ -11,15 +10,12 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         // 不传递默认开启loading
-        Toast.loading({
-            message: '加载中...',
-            forbidClick: true,
-        })
+        message.loading('加载中...',0)
         return config
     },
     error => {
         // do something with request error
-        Toast.clear()
+        message.destroy()
         console.log(error) // for debug
         return Promise.reject(error)
     }
@@ -27,11 +23,11 @@ service.interceptors.request.use(
 // respone拦截器
 service.interceptors.response.use(
     response => {
-        Toast.clear()
+        message.destroy()
         return response
     },
     error => {
-        Toast.clear()
+        message.destroy()
         console.log('err' + error) // for debug
         return Promise.reject(error)
     }

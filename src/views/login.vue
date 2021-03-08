@@ -58,7 +58,7 @@ export default defineComponent({
       service
         .post("/user/isExistByUsername", { name: formState.username })
         .then((res) => {
-          console.login(res, "res");
+          console.log(res, "res");
         });
     };
     return {
