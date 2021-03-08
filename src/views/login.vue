@@ -1,25 +1,28 @@
 <template>
   <div class="login-container">
     <a-form
-    :layout="formState.layout"
-    :model="formState"
-    v-bind="formItemLayout"
-    class="login-form"
-  >
-    <a-form-item label="用户名">
-      <a-input v-model:value="formState.username" placeholder="用户名" />
-    </a-form-item>
-    <a-form-item label="密码">
-      <a-input v-model:value="formState.password" placeholder="密码" />
-    </a-form-item>
-    <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
-      <a-button type="primary" class="submitBtn">登录/注册</a-button>
-    </a-form-item>
-  </a-form>
+      :layout="formState.layout"
+      :model="formState"
+      v-bind="formItemLayout"
+      class="login-form"
+    >
+      <a-form-item label="用户名">
+        <a-input v-model:value="formState.username" placeholder="用户名" />
+      </a-form-item>
+      <a-form-item label="密码">
+        <a-input v-model:value="formState.password" placeholder="密码" />
+      </a-form-item>
+      <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
+        <a-button type="primary" class="submitBtn" @click="handleLogin"
+          >登录/注册</a-button
+        >
+      </a-form-item>
+    </a-form>
   </div>
 </template>
 <script>
 import { computed, defineComponent, reactive } from "vue";
+import service from "@/utils/axios/http";
 export default defineComponent({
   setup() {
     const formState = reactive({
@@ -51,10 +54,18 @@ export default defineComponent({
           }
         : {};
     });
+    const handleLogin = () => {
+      service
+        .post("/user/isExistByUsername", { name: formState.username })
+        .then((res) => {
+          console.login(res, "res");
+        });
+    };
     return {
       formState,
       formItemLayout,
       buttonItemLayout,
+      handleLogin,
     };
   },
 });
@@ -70,8 +81,6 @@ export default defineComponent({
     position: absolute;
     right: 10vw;
     top: 40vh;
-    .submitBtn {
-    }
   }
 }
 </style>
