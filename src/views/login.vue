@@ -1,18 +1,18 @@
 <template>
 <div class="login-container">
-    <a-form :model="formState" class="login-form" :wrapper-col='wrapperCol' :label-col='labelCol' :size='large'>
-        <a-form-item label="用户名:">
-            <a-input v-model="formState.username" placeholder="用户名" />
+    <a-form :model="formState" ref='formRef' :rules="rules" class="login-form" :wrapper-col='wrapperCol' :label-col='labelCol' :size='large'>
+        <a-form-item label="用户名:" name="username">
+            <a-input v-model:value="formState.username" placeholder="用户名" />
         </a-form-item>
-        <a-form-item label="密码:">
-            <a-input v-model="formState.password" placeholder="密码" visibilityToggle type="pas" />
+        <a-form-item label="密码:" name="password">
+            <a-input v-model:value="formState.password" placeholder="密码" visibilityToggle type="pas" />
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 14, offset: 5 }">
             <a-button type="primary" class="submitBtn" @click="handleLogin" :loading='btnLoading'>登录/注册</a-button>
         </a-form-item>
     </a-form>
-    
 </div>
+<a-spin :spinning="spinning" :tip='tip' />
 </template>
 
 <script>
@@ -24,32 +24,48 @@ import {
 import service from "@/utils/axios/http";
 export default defineComponent({
     setup() {
-        let btnLoading = ref(false)
         const formState = reactive({
             username: "",
             password: "",
         });
+        let btnLoading = ref(false)
+        let spinning = ref(false)
+        let tip = ref('正在校验用户信息...')
+        const rules = {
+            username:
+        }
         const handleLogin = () => {
             btnLoading.value = true;
+            spinning.value = true;
             service
                 .post("/user/isExistByUsername", {
                     name: formState.username
                 })
-                .then((res) => {
-                    console.log(res, "res");
+                .then(() => {
+                    const {
+                        data: {
+                            code,
+                            isExist
+                        }
+                    } = res;
+                }).catch((err) => {
                     btnLoading.value = false;
-                });
+                    spinning.value = false;
+                    console.log(err, "err");
+                })
         };
         return {
+            formState,
             wrapperCol: {
                 span: 19
             },
             labelCol: {
                 span: 5
             },
-            formState,
             handleLogin,
-            btnLoading
+            btnLoading,
+            spinning,
+            tip,
         };
     },
 });
