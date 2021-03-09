@@ -2,7 +2,10 @@ import {
   createRouter,
   createWebHashHistory,
 } from 'vue-router'
-
+import tokenEvent from '../utils/utils'
+const {
+  get_token
+} = tokenEvent;
 const routes = [{
     path: '/',
     redirect: '/login'
@@ -24,7 +27,15 @@ const router = createRouter({
   routes
 })
 router.beforeEach((to, from,next) =>{
-  console.log(to, from)
-  next()
+  const token = get_token()
+  if(token){
+    next();
+  }else{
+    if (to.path === '/login') {
+      next();
+    } else {
+      next({path: '/login'})
+    }
+  }
 })
 export default router

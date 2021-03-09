@@ -2,7 +2,7 @@ const set_token = (token) => {
     sessionStorage.setItem('token', token);
 }
 const get_token = () => {
-    sessionStorage.getItem('token');
+   return sessionStorage.getItem('token');
 }
 
 export default {

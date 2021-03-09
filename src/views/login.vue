@@ -22,6 +22,13 @@ import {
     ref
 } from "vue";
 import service from "@/utils/axios/http";
+import tokenEvent from "@/utils/utils"
+const {
+    set_token
+} = tokenEvent
+import {
+    useRouter
+} from 'vue-router'
 export default defineComponent({
     setup() {
         const formState = reactive({
@@ -32,6 +39,7 @@ export default defineComponent({
         let btnLoading = ref(false)
         let spinning = ref(false)
         let tip = ref('正在校验用户信息...')
+        const router = useRouter()
         const rules = {
             username: [{
                 required: true,
@@ -59,7 +67,8 @@ export default defineComponent({
                 .then(() => {
                     service
                         .post("/user/isExistByUsername", {
-                            name: formState.username
+                            name: formState.username,
+                            password: formState.password
                         })
                         .then((res) => {
                             const {
@@ -92,7 +101,35 @@ export default defineComponent({
         // 已存在则登录
         const loginEvent = () => {
             tip.value = '正在登录，请稍后...'
-            
+            service
+                .post("/login", {
+                    name: formState.username,
+                    password: formState.password
+                })
+                .then((res) => {
+                    const {
+                        data: {
+                            code,
+                            data: {
+                                token = ''
+                            }
+                        }
+                    } = res;
+                    if (code === 200) {
+                        set_token(token);
+                        router.push('/dashboard');
+                    } else {
+                        btnLoading.value = false;
+                        spinning.value = false;
+
+                        message.error('登录失败!');
+                        return
+                    }
+                }).catch((err) => {
+                    btnLoading.value = false;
+                    spinning.value = false;
+                    console.log(err, "err");
+                })
         }
         // 未存在则注册
         const registerEvent = () => {
@@ -103,7 +140,6 @@ export default defineComponent({
                     password: formState.password
                 })
                 .then((res) => {
-                    
                     const {
                         data: {
                             code
